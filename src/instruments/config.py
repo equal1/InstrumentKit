@@ -146,9 +146,17 @@ def load_instruments(conf_file_name, conf_path="/"):
 
     if isinstance(conf_file_name, str):
         with open(conf_file_name) as f:
-            conf_dict = yaml.load(f, Loader=yaml.Loader)
+            if yaml.version_info < (0, 15):
+                conf_dict = yaml.load(f, Loader=yaml.Loader)
+            else:
+                with yaml.YAML(typ='unsafe') as yml:
+                    conf_dict = yml.load(f);
     else:
-        conf_dict = yaml.load(conf_file_name, Loader=yaml.Loader)
+        if yaml.version_info < (0, 15):
+            conf_dict = yaml.load(conf_file_name, Loader=yaml.Loader)
+        else:
+            with yaml.YAML(typ='unsafe') as yml:
+                conf_dict = yml.load(conf_file_name)
 
     conf_dict = walk_dict(conf_dict, conf_path)
 

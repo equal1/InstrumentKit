@@ -52,7 +52,12 @@ a:
     d: !Q 98
 """
     )
-    data = yaml.load(yaml_data, Loader=yaml.Loader)
+    if yaml.version_info < (0, 15):
+        data = yaml.load(yaml_data, Loader=yaml.Loader)
+    else:
+        with yaml.YAML(typ='unsafe') as yml:
+            data = yml.load(yaml_data)
+
     assert data["a"]["b"] == u.Quantity(37, "tesla")
     assert data["a"]["c"] == u.Quantity(41.2, "inches")
     assert data["a"]["d"] == 98
